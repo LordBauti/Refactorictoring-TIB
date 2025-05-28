@@ -1,5 +1,72 @@
 <?php
 require_once("./models/subjects.php");
+include 'databaseConfig.php';
+
+// Añadir materia
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['name'])) {
+   
+
+    $name = $_POST['name'];
+
+    // Verificar si ya existe la materia
+    $check = mysqli_prepare($conn, "SELECT COUNT(*) FROM subjects WHERE name = ?");
+    mysqli_stmt_bind_param($check, "s", $name);
+    mysqli_stmt_execute($check);
+    mysqli_stmt_bind_result($check, $total);
+    mysqli_stmt_fetch($check);
+    mysqli_stmt_close($check);
+
+    if ($total > 0) {
+        echo "Ya existe una materia con ese nombre.";
+        exit;
+    }
+
+    // Insertar materia
+    $stmt = mysqli_prepare($conn, "INSERT INTO subjects (name) VALUES (?)");
+    mysqli_stmt_bind_param($stmt, "s", $name);
+    if (mysqli_stmt_execute($stmt)) {
+        echo "Materia agregada correctamente.";
+    } else {
+        echo "Error al agregar materia: " . mysqli_error($conn);
+    }
+    mysqli_stmt_close($stmt);
+}
+// Eliminar estudiante o materia (GET con tipo)
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'], $_GET['type'])) {
+    $id = $_GET['delete_id'];
+    $type = $_GET['type'];
+
+    if ($type === 'subject') {
+        $stmt = mysqli_prepare($conn, "DELETE FROM subjects WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        if (!mysqli_stmt_execute($stmt)) {
+            if (mysqli_errno($conn) == 1451) {
+                echo "No se puede borrar la materia porque está asociada a un estudiante.";
+            } else {
+                echo "Error al borrar: " . mysqli_error($conn);
+            }
+        } else {
+            echo "Materia borrada correctamente.";
+        }
+        mysqli_stmt_close($stmt); //Libero recursos
+    }
+
+    if ($type === 'student') {
+        $stmt = mysqli_prepare($conn, "DELETE FROM students WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        if (!mysqli_stmt_execute($stmt)) {
+            if (mysqli_errno($conn) == 1451) {  //1451 eliminación falló (restricción de clave foránea).
+                echo "No se puede borrar el estudiante porque tiene materias asignadas.";
+            } else {
+                echo "Error al borrar: " . mysqli_error($conn);
+            }
+        } else {
+            echo "Estudiante borrado correctamente.";
+        }
+        mysqli_stmt_close($stmt);  //Libero recursos
+    }
+}
+
 
 function handleGet($conn) 
 {
@@ -62,4 +129,5 @@ function handleDelete($conn)
         echo json_encode(["error" => "No se pudo eliminar"]);
     }
 }
+
 ?>
