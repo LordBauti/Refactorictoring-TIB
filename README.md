@@ -10,15 +10,15 @@ Este repositorio contiene el proyecto TIB refactorizado.
 
 ## Estructura del proyecto
 ├── backend
-│ ├── config # Configuración y conexión a la base de datos
-│ ├── controllers # Lógica
-│ └── models # Acceso a datos y lógica de entidades
+│  config # Configuración y conexión a la base de datos
+│  controllers # Lógica
+│  models # Acceso a datos y lógica de entidades
 ├── frontend # Interfaz de usuario (formularios, vistas)
-│ ├── css # Estilos 
-│ ├── html # Estructura/maquetacion de la pgina
-│ ├── img # Imaganes visibles para los usuarios
-│ ├── js # APIS 
-│ └── index.html 
+│ css # Estilos 
+│ html # Estructura/maquetacion de la pgina
+│ img # Imaganes visibles para los usuarios
+│  js # APIS 
+│  index.html 
 ├── uml # Diagramas de secuencia.
 ├── subir_proyecto.bat # Script para subir proyecto a GitHub
 ├── LICENSE
