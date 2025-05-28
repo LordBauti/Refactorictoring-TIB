@@ -1,5 +1,26 @@
 <?php
 require_once("./models/students.php");
+require_once("./models/subjects.php");
+include 'databaseConfig.php';
+
+$id = $_GET['id'] ?? 0;
+
+// Intentar borrar y capturar error por restricción de clave foránea
+$query = "DELETE FROM students WHERE id = ?";//Prevengo inyecciones SQL pasando ?
+$stmt = mysqli_prepare($conn, $query); //Consulta sql
+mysqli_stmt_bind_param($stmt, "i", $id); //Asocio ID al ? , i indico que es entero
+
+if (!mysqli_stmt_execute($stmt)) {
+    if (mysqli_errno($conn) == 1451) { // Error de clave foránea
+        echo "No se puede borrar el estudiante porque está inscrito en una materia.";
+    } else {
+        echo "Error al intentar borrar el estudiante: " . mysqli_error($conn);
+    }
+}
+mysqli_stmt_close($stmt); //Libero recursos
+
+
+
 
 function handleGet($conn) 
 {
