@@ -1,6 +1,51 @@
 <?php
 require_once("./models/studentsSubjects.php");
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    include 'databaseConfig.php';
+
+    $student_id = $_POST['student_id'] ?? 0;
+    $subject_id = $_POST['subject_id'] ?? 0;
+
+    // Verificar duplicado
+    $check = mysqli_prepare($conn, "SELECT COUNT(*) FROM students_subjects WHERE student_id = ? AND subject_id = ?");
+    mysqli_stmt_bind_param($check, "ii", $student_id, $subject_id);
+    mysqli_stmt_execute($check);
+    mysqli_stmt_bind_result($check, $exists);
+    mysqli_stmt_fetch($check);
+    mysqli_stmt_close($check);
+
+    if ($exists > 0) {
+        echo "Esta relación ya existe.";
+        exit;
+    }
+
+    // Validar máximo de materias por estudiante
+    $checkLimit = mysqli_prepare($conn, "SELECT COUNT(*) FROM students_subjects WHERE student_id = ?");
+    mysqli_stmt_bind_param($checkLimit, "i", $student_id);
+    mysqli_stmt_execute($checkLimit);
+    mysqli_stmt_bind_result($checkLimit, $total);
+    mysqli_stmt_fetch($checkLimit);
+    mysqli_stmt_close($checkLimit);
+
+    if ($total >= 6) {
+        echo "El estudiante ya está inscrito en 6 materias.";
+        exit;
+    }
+
+    // Insertar relación
+    $stmt = mysqli_prepare($conn, "INSERT INTO students_subjects (student_id, subject_id) VALUES (?, ?)");
+    mysqli_stmt_bind_param($stmt, "ii", $student_id, $subject_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        echo "Relación creada exitosamente.";
+    } else {
+        echo "Error al crear relación: " . mysqli_error($conn);
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
 function handleGet($conn) 
 {
     $result = getAllSubjectsStudents($conn);
