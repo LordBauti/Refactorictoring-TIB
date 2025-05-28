@@ -46,20 +46,30 @@ INSERT INTO subjects (name) VALUES
 ('Algoritmos y Estructura de Datos I'), 
 ('Fundamentos de Informática');
 
+
+
+
 /*Crear TABLA INTERMEDIA students_subjects
 Constraints, o restricción UNIQUE(student_id, subject_id): garantiza que un estudiante
 no tenga dos veces la misma materia*/
+/*UNIQUE en subjects.name   No duplicar materias*/
+/*	PRIMARY KEY(student_id, subject_id) en students_subjects
+No duplicar relaciones estudiante-materia*/
+
 /*approved: si está aprobada la materia o no (por defecto FALSE).
-ON DELETE CASCADE: si eliminás un estudiante o materia, se borra
-su asignación automáticamente.*/
+ON DELETE RESTRICT No permitir borrar estudiante/materia si hay relaciones
+*/
+
+
+
 CREATE TABLE students_subjects (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY Key,
     student_id INT NOT NULL,
     subject_id INT NOT NULL,
     approved BOOLEAN DEFAULT FALSE,
-    UNIQUE (student_id, subject_id),
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
+    Unique (student_id, subject_id), -- Evita relaciones duplicadas
+    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE RESTRICT,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE RESTRICT
 ) ENGINE=INNODB;
 
 /*Insertar relaciones de prueba students_subjects*/
