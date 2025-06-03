@@ -21,7 +21,6 @@ Este repositorio contiene el proyecto TIB refactorizado.
 │   ├── js             # APIs 
 │   └── index.html     # Página principal
 ├── uml                # Diagramas de secuencia
-├── subir_proyecto.bat # Script para subir proyecto a GitHub
 ├── LICENSE
 └── README.md          # Cambios pedidos
 ```
